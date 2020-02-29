@@ -1,4 +1,10 @@
 package ast.statement;
 
-public interface IStatement {
+import ast.IAbstractSyntaxTree;
+
+import java.util.Map;
+
+public interface IStatement extends IAbstractSyntaxTree {
+
+    void interp(Map<String, Double> memory);
 }
