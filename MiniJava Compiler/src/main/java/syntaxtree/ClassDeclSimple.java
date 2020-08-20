@@ -3,7 +3,6 @@ import visitor.Visitor;
 import visitor.TypeVisitor;
 
 public class ClassDeclSimple extends ClassDecl {
-  public Identifier i;
   public VarDeclList vl;  
   public MethodDeclList ml;
  
