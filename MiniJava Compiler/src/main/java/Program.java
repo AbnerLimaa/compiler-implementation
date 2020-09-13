@@ -1,4 +1,6 @@
 import parser.MiniJavaParser;
+import symboltable.SymbolTable;
+import symboltable.entries.ClassEntry;
 import visitor.BuildSymbolTableVisitor;
 import visitor.TypeCheckVisitor;
 
@@ -7,9 +9,6 @@ import java.io.FileReader;
 import java.io.Reader;
 
 public class Program {
-
-    private static BuildSymbolTableVisitor buildSymbolTableVisitor = new BuildSymbolTableVisitor();
-    private static TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
 
     public static void main(String[] args) {
         try {
@@ -26,7 +25,20 @@ public class Program {
     }
 
     private static void visitSyntaxTree(syntaxtree.Program p) {
+        SymbolTable<ClassEntry> symbolTable = visitSymbolTable(p);
+        visitTypeChecking(p, symbolTable);
+    }
+
+    private static  SymbolTable<ClassEntry> visitSymbolTable(syntaxtree.Program p) {
+        BuildSymbolTableVisitor buildSymbolTableVisitor = new BuildSymbolTableVisitor();
         p.accept(buildSymbolTableVisitor);
-        System.out.println(buildSymbolTableVisitor.getSymbolTable().toString());
+        buildSymbolTableVisitor.printSymbolTable();
+        return buildSymbolTableVisitor.getSymbolTable();
+    }
+
+    private static void visitTypeChecking(syntaxtree.Program p, SymbolTable<ClassEntry> symbolTable) {
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable);
+        p.accept(typeCheckVisitor);
+        typeCheckVisitor.printErrors();
     }
 }

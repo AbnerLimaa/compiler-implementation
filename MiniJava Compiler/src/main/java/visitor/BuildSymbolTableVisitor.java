@@ -16,6 +16,11 @@ public class BuildSymbolTableVisitor extends DepthFirstVisitor {
         return this.symbolTable;
     }
 
+    public void printSymbolTable() {
+        System.out.println("SYMBOL TABLE:");
+        System.out.println(symbolTable.toString());
+    }
+
     @Override
     public void visit(ClassDeclSimple n) {
         this.currentClass = n;
