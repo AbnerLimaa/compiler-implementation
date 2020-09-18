@@ -8,6 +8,7 @@ import symboltable.tables.MethodTable;
 public class ClassEntry implements SymbolTableEntry {
 
     private String symbol;
+    private String inherits = "Object";
     private SymbolTable<FieldEntry> fieldTable = new FieldTable();
     private SymbolTable<MethodEntry> methodTable = new MethodTable();
 
@@ -26,6 +27,14 @@ public class ClassEntry implements SymbolTableEntry {
 
     public SymbolTable<MethodEntry> getMethodTable() {
         return this.methodTable;
+    }
+
+    public void setSuper(String inherits) {
+        this.inherits = inherits;
+    }
+
+    public String getSuper() {
+        return this.inherits;
     }
 
     @Override

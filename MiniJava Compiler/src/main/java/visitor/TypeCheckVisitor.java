@@ -11,8 +11,6 @@ public class TypeCheckVisitor extends TypeDepthFirstVisitor {
 
     private ClassDecl currentClass;
     private MethodDecl currentMethod;
-    private Boolean searchOnCurrentClass = true;
-    private String lastClassIdentifierName;
 
     private SymbolTable<ClassEntry> symbolTable;
     private List<String> errors = new ArrayList<>();
@@ -32,182 +30,103 @@ public class TypeCheckVisitor extends TypeDepthFirstVisitor {
         }
     }
 
-    private Type getMethodType(String s) {
-        String searchClass = lastClassIdentifierName;
-        if (searchOnCurrentClass && this.currentClass != null)
-            searchClass = this.currentClass.i.s;
-        if (searchClass != null) {
-            ClassEntry classEntry = symbolTable.searchEntry(searchClass);
+    private Boolean classInherits(String s1, String s2) {
+        if (s1 != null && s2 != null) {
+            ClassEntry classEntry2 = symbolTable.searchEntry(s2);
+            if (classEntry2 != null && classEntry2.getSuper() != null)
+                return classEntry2.getSuper().equals(s1);
+        }
+        return false;
+    }
+
+    private Type getMethodType(String className, String methodName) {
+        if (className != null && methodName != null) {
+            ClassEntry classEntry = symbolTable.searchEntry(className);
             if (classEntry != null) {
-                MethodEntry methodEntry = classEntry.getMethodTable().searchEntry(s);
-                if (methodEntry != null) {
-                    //System.out.println("Method id match");
+                MethodEntry methodEntry = classEntry.getMethodTable().searchEntry(methodName);
+                if (methodEntry != null)
                     return methodEntry.getReturnType();
-                }
             }
         }
         return null;
     }
 
-    private Type getVarType(String s) {
+    private List<ParamEntry> getMethodParams(String className, String methodName) {
+        if (className != null && methodName != null) {
+            ClassEntry classEntry = symbolTable.searchEntry(className);
+            if (classEntry != null) {
+                MethodEntry methodEntry = classEntry.getMethodTable().searchEntry(methodName);
+                if (methodEntry != null)
+                    return methodEntry.getParamTable().getEntries();
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private Type getVarType(String varName) {
         if (this.currentClass != null) {
             ClassEntry classEntry = symbolTable.searchEntry(this.currentClass.i.s);
             if (classEntry != null) {
-                FieldEntry fieldEntry = classEntry.getFieldTable().searchEntry(s);
+                FieldEntry fieldEntry = classEntry.getFieldTable().searchEntry(varName);
                 if (this.currentMethod != null) {
                     MethodEntry methodEntry = classEntry.getMethodTable().searchEntry(this.currentMethod.i.s);
                     if (methodEntry != null) {
-                        LocalEntry localEntry = methodEntry.getLocalTable().searchEntry(s);
-                        ParamEntry paramEntry = methodEntry.getParamTable().searchEntry(s);
-                        if (localEntry != null) {
-                            //System.out.println("Local id match");
+                        LocalEntry localEntry = methodEntry.getLocalTable().searchEntry(varName);
+                        ParamEntry paramEntry = methodEntry.getParamTable().searchEntry(varName);
+                        if (localEntry != null)
                             return localEntry.getType();
-                        }
-                        else if (paramEntry != null) {
-                            //System.out.println("Param id match");
+                        else if (paramEntry != null)
                             return paramEntry.getType();
-                        }
-                        else if (fieldEntry != null) {
-                            //System.out.println("Field id match");
+                        else if (fieldEntry != null)
                             return fieldEntry.getType();
-                        }
                     }
                 }
-                else if (fieldEntry != null) {
-                    //System.out.println("Field id match");
+                else if (fieldEntry != null)
                     return fieldEntry.getType();
-                }
             }
         }
         return null;
     }
 
-    private Boolean expResultsBoolean(Exp e) {
-        if (e instanceof True || e instanceof False) {
-            //System.out.println("True or False");
-            return true;
-        }
-        if (e instanceof IdentifierExp) {
-            //System.out.println("Identifier");
-            IdentifierExp i = (IdentifierExp)e;
-            Type iType = getVarType(i.s);
-            Boolean result = iType instanceof BooleanType;
-            //System.out.println("Result: " + result);
-            return result;
-        }
-        if (e instanceof Call) {
-            Identifier i = ((Call)e).i;
-            if (i != null) {
-                Type iType = getMethodType(i.s);
-                return iType instanceof BooleanType;
-            }
-        }
-        if (e instanceof And) {
-            //System.out.println("And");
-            Exp e1 = ((And)e).e1;
-            Exp e2 = ((And)e).e2;
-            return expResultsBoolean(e1) && expResultsBoolean(e2);
-        }
-        if (e instanceof LessThan) {
-            //System.out.println("Less Than");
-            Exp e1 = ((LessThan)e).e1;
-            Exp e2 = ((LessThan)e).e2;
-            return expResultsInteger(e1) && expResultsInteger(e2);
-        }
-        if (e instanceof Not) {
-            //System.out.println("Not");
-            Exp e1 = ((Not)e).e;
-            return expResultsBoolean(e1);
-        }
-        return false;
-    }
-
-    private Boolean expResultsInteger(Exp e) {
-        if (e instanceof IntegerLiteral)
-            return true;
-        if (e instanceof IdentifierExp) {
-            IdentifierExp iExp = (IdentifierExp)e;
-            Type iType = getVarType(iExp.s);
-            return iType instanceof IntegerType;
-        }
-        if (e instanceof Call) {
-            Identifier i = ((Call)e).i;
-            if (i != null) {
-                Type iType = getMethodType(i.s);
-                return iType instanceof IntegerType;
-            }
-        }
-        if (e instanceof Plus) {
-            Exp e1 = ((Plus)e).e1;
-            Exp e2 = ((Plus)e).e2;
-            return expResultsInteger(e1) && expResultsInteger(e2);
-        }
-        if (e instanceof Minus) {
-            Exp e1 = ((Minus)e).e1;
-            Exp e2 = ((Minus)e).e2;
-            return expResultsInteger(e1) && expResultsInteger(e2);
-        }
-        if (e instanceof Times) {
-            Exp e1 = ((Times)e).e1;
-            Exp e2 = ((Times)e).e2;
-            return expResultsInteger(e1) && expResultsInteger(e2);
-        }
-        return false;
-    }
-
-    private Boolean expResultsIntArray(Exp e) {
-        if (e instanceof NewArray)
-            return true;
-        if (e instanceof IdentifierExp) {
-            IdentifierExp iExp = (IdentifierExp)e;
-            Type iType = getVarType(iExp.s);
-            return iType instanceof IntArrayType;
-        }
-        if (e instanceof Call) {
-            Identifier i = ((Call)e).i;
-            if (i != null) {
-                Type iType = getMethodType(i.s);
-                return iType instanceof IntArrayType;
-            }
-        }
-        return false;
-    }
-
-    private Boolean expResultsIdentifier(Exp e, String s) {
-        if (e instanceof IdentifierExp) {
-            IdentifierExp iExp = (IdentifierExp)e;
-            Type iType = getVarType(iExp.s);
-            if (iType instanceof IdentifierType) {
-                IdentifierType i = (IdentifierType)iType;
-                if (i.s != null)
-                    return i.s.equals(s);
-            }
-        }
-        if (e instanceof Call) {
-            Identifier i = ((Call)e).i;
-            if (i != null) {
-                Type type = getMethodType(i.s);
-                if (type instanceof IdentifierType) {
-                    IdentifierType iType = (IdentifierType)type;
-                    if (iType.s != null)
-                        return iType.s.equals(s);
+    private Type getVarType(String className, String methodName, String varName) {
+        if (className != null) {
+            ClassEntry classEntry = symbolTable.searchEntry(className);
+            if (classEntry != null) {
+                FieldEntry fieldEntry = classEntry.getFieldTable().searchEntry(varName);
+                if (methodName != null) {
+                    MethodEntry methodEntry = classEntry.getMethodTable().searchEntry(methodName);
+                    if (methodEntry != null) {
+                        LocalEntry localEntry = methodEntry.getLocalTable().searchEntry(varName);
+                        ParamEntry paramEntry = methodEntry.getParamTable().searchEntry(varName);
+                        if (localEntry != null)
+                            return localEntry.getType();
+                        else if (paramEntry != null)
+                            return paramEntry.getType();
+                        else if (fieldEntry != null)
+                            return fieldEntry.getType();
+                    }
                 }
+                else if (fieldEntry != null)
+                    return fieldEntry.getType();
             }
         }
-        return false;
+        return null;
     }
 
-    private Boolean isSameType(Exp e, Type t) {
-        if (t instanceof BooleanType && expResultsBoolean(e))
+    private Boolean isSameType(Type t1, Type t2) {
+        if (t1 instanceof BooleanType && t2 instanceof BooleanType)
             return true;
-        if (t instanceof IntegerType && expResultsInteger(e))
+        if (t1 instanceof IntegerType && t2 instanceof IntegerType)
             return true;
-        if (t instanceof IntArrayType && expResultsIntArray(e))
+        if (t1 instanceof IntArrayType && t2 instanceof IntArrayType)
             return true;
-        if (t instanceof IdentifierType) {
-            IdentifierType type = (IdentifierType)t;
-            if (type.s != null) {
-                return expResultsIdentifier(e, type.s);
+        if (t1 instanceof IdentifierType && t2 instanceof IdentifierType) {
+            IdentifierType type1 = (IdentifierType)t1;
+            IdentifierType type2 = (IdentifierType)t2;
+            if (type1.s != null && type2.s != null) {
+                boolean condition1 = type1.s.equals(type2.s);
+                boolean condition2 = classInherits(type1.s, type2.s);
+                return condition1 || condition2;
             }
         }
         return false;
@@ -238,134 +157,238 @@ public class TypeCheckVisitor extends TypeDepthFirstVisitor {
     }
 
     @Override
+    public Type visit(Print n) {
+        if (n != null && n.e != null) {
+            Type type = n.e.accept(this);
+            if (!(type instanceof IntegerType))
+                errors.add("Trying to print value that is not integer");
+        }
+        return super.visit(n);
+    }
+
+    @Override
     public Type visit(If n) {
-        if (n != null && n.e != null)
-            if (!expResultsBoolean(n.e))
+        if (n != null && n.e != null) {
+            Type type = n.e.accept(this);
+            if (!(type instanceof BooleanType))
                 errors.add("Trying to assign an expression that is not boolean to an if statement");
+        }
         return super.visit(n);
     }
 
     @Override
     public Type visit(While n) {
-        if (n != null && n.e != null)
-            if (!expResultsBoolean(n.e))
+        if (n != null && n.e != null) {
+            Type type = n.e.accept(this);
+            if (!(type instanceof BooleanType))
                 errors.add("Trying to assign an expression that is not boolean to an while statement");
+        }
         return super.visit(n);
     }
 
     @Override
     public Type visit(Assign n) {
         if (n != null && n.e != null && n.i != null && n.i.s != null) {
-            Type iType = getVarType(n.i.s);
-            if (!isSameType(n.e, iType))
-                errors.add("Trying assign value with type different than identifier type");
+            Type type1 = getVarType(n.i.s);
+            Type type2 = n.e.accept(this);
+            if (!isSameType(type1, type2))
+                errors.add("Trying to assign value with type different than identifier type");
         }
         return super.visit(n);
     }
 
     @Override
     public Type visit(ArrayAssign n) {
-        //System.out.println("ArrayAssign: " + n.i.s);
+        if (n != null && n.e1 != null && n.e2 != null && n.i != null && n.i.s != null) {
+            Type type = getVarType(n.i.s);
+            Type type1 = n.e1.accept(this);
+            Type type2 = n.e2.accept(this);
+            if (!(type instanceof IntArrayType))
+                errors.add("Identifier is not an integer array");
+            if (!(type1 instanceof IntegerType))
+                errors.add("Array index must be of type integer");
+            if (!(type2 instanceof IntegerType))
+                errors.add("Trying to assign array value with type different than integer");
+        }
         return super.visit(n);
     }
 
     @Override
     public Type visit(And n) {
         if (n != null && n.e1 != null && n.e2 != null) {
-            Exp e1 = n.e1;
-            Exp e2 = n.e2;
-            if (!(expResultsBoolean(e1) && expResultsBoolean(e2)))
-                errors.add("Trying to conjugate expressions that are not booleans");
+            Type type1 = n.e1.accept(this);
+            Type type2 = n.e2.accept(this);
+            if (!(type1 instanceof BooleanType))
+                errors.add("Left side of And expression must have boolean value");
+            if (!(type2 instanceof BooleanType))
+                errors.add("Right side of And expression must have boolean value");
         }
-        return super.visit(n);
-    }
-
-    @Override
-    public Type visit(LessThan n) {
-        if (n != null && n.e1 != null && n.e2 != null) {
-            Exp e1 = n.e1;
-            Exp e2 = n.e2;
-            if (!(expResultsInteger(e1) && expResultsInteger(e2)))
-                errors.add("Trying to compare expressions that are not integers");
-        }
-        return super.visit(n);
-    }
-
-    @Override
-    public Type visit(Plus n) {
-        if (n != null && n.e1 != null && n.e2 != null) {
-            Exp e1 = n.e1;
-            Exp e2 = n.e2;
-            if (!(expResultsInteger(e1) && expResultsInteger(e2)))
-                errors.add("Trying to sum expressions that are not integers");
-        }
-        return super.visit(n);
-    }
-
-    @Override
-    public Type visit(Minus n) {
-        if (n != null && n.e1 != null && n.e2 != null) {
-            Exp e1 = n.e1;
-            Exp e2 = n.e2;
-            if (!(expResultsInteger(e1) && expResultsInteger(e2)))
-                errors.add("Trying to minus expressions that are not integers");
-        }
-        return super.visit(n);
-    }
-
-    @Override
-    public Type visit(Times n) {
-        if (n != null && n.e1 != null && n.e2 != null) {
-            Exp e1 = n.e1;
-            Exp e2 = n.e2;
-            if (!(expResultsInteger(e1) && expResultsInteger(e2)))
-                errors.add("Trying to times expressions that are not integers");
-        }
-        return super.visit(n);
-    }
-
-    @Override
-    public Type visit(Call n) {
-        if (n != null && n.e != null && n.i != null && n.i.s != null) {
-            Type iType = getMethodType(n.i.s);
-            if (!isSameType(n.e, iType))
-                errors.add("Trying to return value that has not the same type as the function declaration");
-        }
-        return super.visit(n);
-    }
-
-    @Override
-    public Type visit(This n) {
-        searchOnCurrentClass = true;
-        return super.visit(n);
-    }
-
-    @Override
-    public Type visit(IdentifierExp n) {
-        //System.out.println("IdentifierExp: " + n.s);
-        return super.visit(n);
+        return new BooleanType();
     }
 
     @Override
     public Type visit(Not n) {
         if (n != null && n.e != null) {
-            if (!expResultsBoolean(n.e))
+            Type type = n.e.accept(this);
+            if (!(type instanceof BooleanType))
                 errors.add("Trying to negate an expression that is not boolean");
+        }
+        return new BooleanType();
+    }
+
+    @Override
+    public Type visit(True n) {
+        return new BooleanType();
+    }
+
+    @Override
+    public Type visit(False n) {
+        return new BooleanType();
+    }
+
+    @Override
+    public Type visit(LessThan n) {
+        if (n != null && n.e1 != null && n.e2 != null) {
+            Type type1 = n.e1.accept(this);
+            Type type2 = n.e2.accept(this);
+            if (!(type1 instanceof IntegerType))
+                errors.add("Left side of Less Than expression must have integer value");
+            if (!(type2 instanceof IntegerType))
+                errors.add("Right side of Less Than expression must have integer value");
+        }
+        return new BooleanType();
+    }
+
+    @Override
+    public Type visit(Plus n) {
+        if (n != null && n.e1 != null && n.e2 != null) {
+            Type type1 = n.e1.accept(this);
+            Type type2 = n.e2.accept(this);
+            if (!(type1 instanceof IntegerType))
+                errors.add("Left side of Plus expression must have integer value");
+            if (!(type2 instanceof IntegerType))
+                errors.add("Right side of Plus expression must have integer value");
+        }
+        return new IntegerType();
+    }
+
+    @Override
+    public Type visit(Minus n) {
+        if (n != null && n.e1 != null && n.e2 != null) {
+            Type type1 = n.e1.accept(this);
+            Type type2 = n.e2.accept(this);
+            if (!(type1 instanceof IntegerType))
+                errors.add("Left side of Minus expression must have integer value");
+            if (!(type2 instanceof IntegerType))
+                errors.add("Right side of Minus expression must have integer value");
+        }
+        return new IntegerType();
+    }
+
+    @Override
+    public Type visit(Times n) {
+        if (n != null && n.e1 != null && n.e2 != null) {
+            Type type1 = n.e1.accept(this);
+            Type type2 = n.e2.accept(this);
+            if (!(type1 instanceof IntegerType))
+                errors.add("Left side of Times expression must have integer value");
+            if (!(type2 instanceof IntegerType))
+                errors.add("Right side of Times expression must have integer value");
+        }
+        return new IntegerType();
+    }
+
+    @Override
+    public Type visit(IntegerLiteral n) {
+        return new IntegerType();
+    }
+
+    @Override
+    public Type visit(This n) {
+        if (this.currentClass != null)
+            return new IdentifierType(this.currentClass.i.s);
+        return super.visit(n);
+    }
+
+    @Override
+    public Type visit(NewObject n) {
+        if (n != null && n.i != null && n.i.s != null)
+            return new IdentifierType(n.i.s);
+        return super.visit(n);
+    }
+
+    @Override
+    public Type visit(Call n) {
+        if (n != null && n.e != null && n.i != null && n.i.s != null && n.el != null) {
+            Type eType = n.e.accept(this);
+            if (eType instanceof IdentifierType) {
+                IdentifierType iType = (IdentifierType)eType;
+                if (iType.s != null) {
+                    List<ParamEntry> params = getMethodParams(iType.s, n.i.s);
+                    if (params.size() != n.el.size())
+                        errors.add("Arguments size does not match method params size");
+                    else {
+                        for(int i = 0; i < params.size(); i++) {
+                            String paramSymbol = params.get(i).getSymbol();
+                            Type t1 = getVarType(iType.s, n.i.s, paramSymbol);
+                            Type t2 = n.el.elementAt(i).accept(this);
+                            if (!isSameType(t1, t2))
+                                errors.add("Trying to pass argument to method with different value");
+                        }
+                    }
+                    return getMethodType(iType.s, n.i.s);
+                }
+            }
+            else
+                errors.add("Trying to call a function from an expression that does not returns class instance");
         }
         return super.visit(n);
     }
 
     @Override
-    public Type visit(Identifier n) {
-        if (n != null && n.s != null) {
-            Type iType = getVarType(n.s);
-            if (iType instanceof IdentifierType) {
-                IdentifierType i = (IdentifierType)iType;
-                searchOnCurrentClass = false;
-                lastClassIdentifierName = i.s;
-            }
+    public Type visit(NewArray n) {
+        if (n != null && n.e != null) {
+            Type eType = n.e.accept(this);
+            if (!(eType instanceof IntegerType))
+                errors.add("Trying to create array with an expression that is not integer");
         }
-        //System.out.println("Identifier: " + n.s);
+        return new IntArrayType();
+    }
+
+    @Override
+    public Type visit(ArrayLength n) {
+        if (n != null && n.e != null) {
+            Type eType = n.e.accept(this);
+            if (!(eType instanceof IntArrayType))
+                errors.add("Trying to get array length from an expression that is not an instance of array");
+        }
+        return new IntegerType();
+    }
+
+    @Override
+    public Type visit(ArrayLookup n) {
+        if (n != null && n.e1 != null && n.e2 != null) {
+            Type e1Type = n.e1.accept(this);
+            Type e2Type = n.e2.accept(this);
+            if (!(e1Type instanceof IntArrayType))
+                errors.add("Trying to get array length from an expression that is not an instance of array");
+            if (!(e2Type instanceof IntegerType))
+                errors.add("Trying get a value on array that is not integer");
+        }
+        return new IntegerType();
+    }
+
+    @Override
+    public Type visit(Identifier n) {
+        if (n != null && n.s != null)
+            return getVarType(n.s);
+        return super.visit(n);
+    }
+
+    @Override
+    public Type visit(IdentifierExp n) {
+        if (n != null && n.s != null)
+            return getVarType(n.s);
         return super.visit(n);
     }
 }

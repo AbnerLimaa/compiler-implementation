@@ -51,9 +51,9 @@ TOKEN: {
 //TOKENS DE AUXÍLIO
 | <#DIGIT: ["0" - "9"] >
 | <#LETTER: ["a" - "z", "A" - "Z"] >
+| <BOOLEAN_LITERAL: "true" | "false">
 | <ID: (<LETTER>) (<LETTER> | <DIGIT> | "_")* >
 | <INTEGER_LITERAL: (<DIGIT>)+ >
-| <BOOLEAN_LITERAL: "true" | "false">
 | <AND: "&&">
 | <LESSTHAN: "<">
 | <PLUS: "+">

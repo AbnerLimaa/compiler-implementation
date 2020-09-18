@@ -3,22 +3,28 @@ package symboltable.tables;
 import symboltable.SymbolTable;
 import symboltable.entries.ParamEntry;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.*;
 
 public class ParamTable implements SymbolTable<ParamEntry> {
 
     private Dictionary<String, ParamEntry> table = new Hashtable<>();
+    private List<ParamEntry> list = new ArrayList<>();
 
     @Override
-    public void addEntry(String symbol, ParamEntry entry) {
+    public void addEntry(String symbol, ParamEntry entry)
+    {
         this.table.put(symbol, entry);
+        this.list.add(entry);
     }
 
     @Override
     public ParamEntry searchEntry(String symbol) {
         return this.table.get(symbol);
+    }
+
+    @Override
+    public List<ParamEntry> getEntries() {
+        return this.list;
     }
 
     @Override

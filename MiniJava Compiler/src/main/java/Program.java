@@ -21,6 +21,7 @@ public class Program {
         }
         catch (Exception e) {
             System.out.println("Syntax is not okay: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

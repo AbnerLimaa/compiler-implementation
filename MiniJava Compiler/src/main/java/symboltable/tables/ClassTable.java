@@ -3,22 +3,28 @@ package symboltable.tables;
 import symboltable.SymbolTable;
 import symboltable.entries.ClassEntry;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.*;
 
 public class ClassTable implements SymbolTable<ClassEntry> {
 
     private Dictionary<String, ClassEntry> table = new Hashtable<>();
+    private List<ClassEntry> list = new ArrayList<>();
 
     @Override
-    public void addEntry(String symbol, ClassEntry entry) {
-        table.put(symbol, entry);
+    public void addEntry(String symbol, ClassEntry entry)
+    {
+        this.table.put(symbol, entry);
+        this.list.add(entry);
     }
 
     @Override
     public ClassEntry searchEntry(String symbol) {
         return table.get(symbol);
+    }
+
+    @Override
+    public List<ClassEntry> getEntries() {
+        return this.list;
     }
 
     @Override

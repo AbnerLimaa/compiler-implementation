@@ -2,23 +2,30 @@ package symboltable.tables;
 
 import symboltable.SymbolTable;
 import symboltable.entries.MethodEntry;
+import symboltable.entries.ParamEntry;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.*;
 
 public class MethodTable implements SymbolTable<MethodEntry> {
 
     private Dictionary<String, MethodEntry> table = new Hashtable<>();
+    private List<MethodEntry> list = new ArrayList<>();
 
     @Override
-    public void addEntry(String symbol, MethodEntry entry) {
+    public void addEntry(String symbol, MethodEntry entry)
+    {
         this.table.put(symbol, entry);
+        this.list.add(entry);
     }
 
     @Override
     public MethodEntry searchEntry(String symbol) {
         return this.table.get(symbol);
+    }
+
+    @Override
+    public List<MethodEntry> getEntries() {
+        return this.list;
     }
 
     @Override

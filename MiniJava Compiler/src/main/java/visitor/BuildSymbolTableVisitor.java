@@ -5,6 +5,8 @@ import symboltable.entries.*;
 import symboltable.tables.ClassTable;
 import syntaxtree.*;
 
+import java.util.List;
+
 public class BuildSymbolTableVisitor extends DepthFirstVisitor {
 
     private ClassDecl currentClass;
@@ -35,8 +37,25 @@ public class BuildSymbolTableVisitor extends DepthFirstVisitor {
     public void visit(ClassDeclExtends n) {
         this.currentClass = n;
         String symbol = n.i.s;
-        ClassEntry entry = new ClassEntry(symbol);
-        symbolTable.addEntry(symbol, entry);
+        String superSymbol = n.j.s;
+        ClassEntry thisEntry = new ClassEntry(symbol);
+        thisEntry.setSuper(superSymbol);
+        symbolTable.addEntry(symbol, thisEntry);
+        ClassEntry superEntry = symbolTable.searchEntry(superSymbol);
+        if (superEntry != null) {
+            List<FieldEntry> fieldList = superEntry.getFieldTable().getEntries();
+            if (fieldList != null) {
+                for (FieldEntry fieldEntry : fieldList) {
+                    thisEntry.getFieldTable().addEntry(fieldEntry.getSymbol(), fieldEntry);
+                }
+            }
+            List<MethodEntry> methodList = superEntry.getMethodTable().getEntries();
+            if (methodList != null) {
+                for (MethodEntry methodEntry : methodList) {
+                    thisEntry.getMethodTable().addEntry(methodEntry.getSymbol(), methodEntry);
+                }
+            }
+        }
         super.visit(n);
         this.currentClass = null;
     }

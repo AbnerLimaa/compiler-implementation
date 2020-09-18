@@ -69,11 +69,11 @@ public interface MiniJavaParserConstants {
   /** RegularExpression Id. */
   int LETTER = 30;
   /** RegularExpression Id. */
-  int ID = 31;
+  int BOOLEAN_LITERAL = 31;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 32;
+  int ID = 32;
   /** RegularExpression Id. */
-  int BOOLEAN_LITERAL = 33;
+  int INTEGER_LITERAL = 33;
   /** RegularExpression Id. */
   int AND = 34;
   /** RegularExpression Id. */
@@ -121,9 +121,9 @@ public interface MiniJavaParserConstants {
     "\".\"",
     "<DIGIT>",
     "<LETTER>",
+    "<BOOLEAN_LITERAL>",
     "<ID>",
     "<INTEGER_LITERAL>",
-    "<BOOLEAN_LITERAL>",
     "\"&&\"",
     "\"<\"",
     "\"+\"",
