@@ -2,8 +2,8 @@
 package parser;
 
 import java.io.Reader;
-import syntaxtree.*;
-import visitor.PrettyPrintVisitor;
+import utils.syntaxtree.*;
+import utils.visitor.PrettyPrintVisitor;
 
 public class MiniJavaParser implements MiniJavaParserConstants {
         public static void parse(Reader code) {
