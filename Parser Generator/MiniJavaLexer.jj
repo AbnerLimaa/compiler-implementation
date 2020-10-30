@@ -66,6 +66,7 @@ SKIP: {
 | < "/*" (~[])+ "*/" > // Comentario de multiplas linhas
 | " "
 | "\t"
+| "\r"
 | "\n"
 }
 

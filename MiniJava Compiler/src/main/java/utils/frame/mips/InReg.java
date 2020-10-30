@@ -1,1 +1,0 @@
-package utils.frame.mips;import utils.frame.Access;import utils.irtree.TEMP;import utils.irtree.abstractions.Exp;import utils.temp.Temp;public class InReg extends Access {    Temp temp;    InReg(Temp t) {	temp = t;    }    public Exp exp(Exp fp) {        return new TEMP(temp);    }    public String toString() {        return temp.toString();    }}

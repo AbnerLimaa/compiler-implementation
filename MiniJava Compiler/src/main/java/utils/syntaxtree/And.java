@@ -1,6 +1,6 @@
 package utils.syntaxtree;
-import utils.visitor.Visitor;
-import utils.visitor.TypeVisitor;
+
+import utils.visitor.*;
 
 public class And extends Exp {
   public Exp e1,e2;

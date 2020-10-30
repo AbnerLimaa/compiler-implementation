@@ -16,10 +16,12 @@ class MoveCall extends Stm {
     public Stm build(ExpList kids) {
         return new MOVE(dst, src.build(kids));
     }
-
     @Override
     public void accept(CodeVisitor v) {
 
+    }
+    public String toString() {
+        return "";
     }
 }
 
@@ -30,10 +32,12 @@ class ExpCall extends Stm {
     public Stm build(ExpList kids) {
         return new EXP(call.build(kids));
     }
-
     @Override
     public void accept(CodeVisitor v) {
 
+    }
+    public String toString() {
+        return "";
     }
 }
 
@@ -144,7 +148,6 @@ public class Canon {
     static StmList linear(SEQ s, StmList l) {
         return linear(s.left,linear(s.right,l));
     }
-
     static StmList linear(Stm s, StmList l) {
         if (s instanceof SEQ) return linear((SEQ)s, l);
         else return new StmList(s,l);

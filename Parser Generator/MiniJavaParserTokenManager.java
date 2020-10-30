@@ -922,7 +922,8 @@ public static final String[] jjstrLiteralImages = {
 "\145\154\163\145", "\167\150\151\154\145", 
 "\123\171\163\164\145\155\56\157\165\164\56\160\162\151\156\164\154\156", "\154\145\156\147\164\150", "\164\150\151\163", "\156\145\167", "\173", 
 "\175", "\50", "\51", "\73", "\54", "\75", "\133", "\135", "\41", "\56", null, null, 
-null, null, null, "\46\46", "\74", "\53", "\55", "\52", null, null, null, null, null, };
+null, null, null, "\46\46", "\74", "\53", "\55", "\52", null, null, null, null, null, 
+null, };
 
 /** Lexer state names. */
 public static final String[] lexStateNames = {
@@ -932,7 +933,7 @@ static final long[] jjtoToken = {
    0x7f9fffffffL, 
 };
 static final long[] jjtoSkip = {
-   0xf8000000000L, 
+   0x1f8000000000L, 
 };
 static protected SimpleCharStream input_stream;
 static private final int[] jjrounds = new int[21];
@@ -1037,7 +1038,7 @@ public static Token getNextToken()
    }
 
    try { input_stream.backup(0);
-      while (curChar <= 32 && (0x100000600L & (1L << curChar)) != 0L)
+      while (curChar <= 32 && (0x100002600L & (1L << curChar)) != 0L)
          curChar = input_stream.BeginToken();
    }
    catch (java.io.IOException e1) { continue EOFLoop; }

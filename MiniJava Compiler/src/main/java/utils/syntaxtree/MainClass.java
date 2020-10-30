@@ -1,6 +1,6 @@
 package utils.syntaxtree;
-import utils.visitor.Visitor;
-import utils.visitor.TypeVisitor;
+
+import utils.visitor.*;
 
 public class MainClass {
   public Identifier i1,i2;

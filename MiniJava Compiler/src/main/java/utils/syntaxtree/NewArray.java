@@ -1,6 +1,6 @@
 package utils.syntaxtree;
-import utils.visitor.Visitor;
-import utils.visitor.TypeVisitor;
+
+import utils.visitor.*;
 
 public class NewArray extends Exp {
   public Exp e;

@@ -49,7 +49,4 @@ public class LabelList {
             return thisSize + tail.totalSize();
         return thisSize;
     }
-
-
 }
-

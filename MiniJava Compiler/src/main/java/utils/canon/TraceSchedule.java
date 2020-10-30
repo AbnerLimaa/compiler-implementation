@@ -3,8 +3,8 @@ package utils.canon;
 import utils.irtree.CJUMP;
 import utils.irtree.JUMP;
 import utils.irtree.LABEL;
-import utils.irtree.abstractions.Stm;
 import utils.irtree.abstractions.StmList;
+import utils.irtree.abstractions.Stm;
 import utils.temp.Label;
 
 public class TraceSchedule {
@@ -13,13 +13,13 @@ public class TraceSchedule {
     BasicBlocks theBlocks;
     java.util.Dictionary table = new java.util.Hashtable();
 
-    StmList getLast(StmList block) {
+    private StmList getLast(StmList block) {
         StmList l=block;
         while (l.tail.tail!=null)  l=l.tail;
         return l;
     }
 
-    void trace(StmList l) {
+    private void trace(StmList l) {
         for(;;) {
             LABEL lab = (LABEL)l.head;
             table.remove(lab.label);
@@ -66,7 +66,7 @@ public class TraceSchedule {
         }
     }
 
-    StmList getNext() {
+    private StmList getNext() {
         if (theBlocks.blocks==null)
             return new StmList(new LABEL(theBlocks.done), null);
         else {

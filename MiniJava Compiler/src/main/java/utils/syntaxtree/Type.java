@@ -1,6 +1,6 @@
 package utils.syntaxtree;
-import utils.visitor.Visitor;
-import utils.visitor.TypeVisitor;
+
+import utils.visitor.*;
 
 public abstract class Type {
   public abstract void accept(Visitor v);

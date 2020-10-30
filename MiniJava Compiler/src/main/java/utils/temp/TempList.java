@@ -1,5 +1,8 @@
 package utils.temp;
 
+import java.util.HashSet;
+import java.util.Arrays;
+
 public class TempList {
     public Temp head;
     public TempList tail;
@@ -36,6 +39,13 @@ public class TempList {
         return array;
     }
 
+    public HashSet<Temp> createTempSet () {
+        Temp[] tempArray = this.createTempArray();
+        HashSet<Temp> tempSet = new HashSet<Temp>(Arrays.asList(tempArray));
+
+        return tempSet;
+    }
+
     public int totalSize() {
         int thisSize = 0;
         if (head != null)
@@ -64,4 +74,15 @@ public class TempList {
                 tail.setValue(value,pos - 1);
         }
     }
+
+    @Override
+    public String toString() {
+        String result = "";
+        if (head != null)
+            result = head.toString();
+        if (tail != null)
+            result = result + " " + tail.toString();
+        return result;
+    }
 }
+

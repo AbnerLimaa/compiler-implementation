@@ -1,6 +1,6 @@
 package utils.syntaxtree;
-import utils.visitor.Visitor;
-import utils.visitor.TypeVisitor;
+
+import utils.visitor.*;
 
 public class ClassDeclSimple extends ClassDecl {
   public VarDeclList vl;  
@@ -16,5 +16,9 @@ public class ClassDeclSimple extends ClassDecl {
 
   public Type accept(TypeVisitor v) {
     return v.visit(this);
+  }
+
+  public MethodDeclList getMethods() {
+      return ml;
   }
 }

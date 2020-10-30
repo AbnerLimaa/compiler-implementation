@@ -1,7 +1,5 @@
 package utils.irtree.abstractions;
 
-import utils.temp.Label;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,5 +48,9 @@ public class ExpList {
         if (tail != null)
             return thisSize + tail.totalSize();
         return thisSize;
+    }
+
+    public String toString() {
+        return "ExpList(" + (head == null ? "null" : head.toString()) + ", " + (tail != null ? tail.toString() : "") + ")";
     }
 }

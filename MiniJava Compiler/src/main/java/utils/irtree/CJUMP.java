@@ -39,4 +39,8 @@ public class CJUMP extends Stm {
     public void accept(CodeVisitor v) {
         v.visit(this);
     }
+
+    public String toString() {
+        return "CJUMP(" + relop + ", " + (left != null ? left.toString() : "null") + ", " + (right == null ? "null" : right.toString()) + ", " + (iftrue == null ? "null" : iftrue.toString()) + ", " + (iffalse == null ? "null" : iffalse.toString()) + ")";
+    }
 }

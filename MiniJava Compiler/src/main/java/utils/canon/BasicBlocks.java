@@ -3,8 +3,8 @@ package utils.canon;
 import utils.irtree.CJUMP;
 import utils.irtree.JUMP;
 import utils.irtree.LABEL;
-import utils.irtree.abstractions.Stm;
 import utils.irtree.abstractions.StmList;
+import utils.irtree.abstractions.Stm;
 import utils.temp.Label;
 
 public class BasicBlocks {

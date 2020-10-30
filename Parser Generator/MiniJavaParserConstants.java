@@ -133,6 +133,7 @@ public interface MiniJavaParserConstants {
     "<token of kind 40>",
     "\" \"",
     "\"\\t\"",
+    "\"\\r\"",
     "\"\\n\"",
   };
 

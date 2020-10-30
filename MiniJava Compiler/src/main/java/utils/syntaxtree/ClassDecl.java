@@ -1,6 +1,6 @@
 package utils.syntaxtree;
-import utils.visitor.Visitor;
-import utils.visitor.TypeVisitor;
+
+import utils.visitor.*;
 
 public abstract class ClassDecl {
 
@@ -8,4 +8,5 @@ public abstract class ClassDecl {
 
   public abstract void accept(Visitor v);
   public abstract Type accept(TypeVisitor v);
+  public abstract MethodDeclList getMethods();
 }

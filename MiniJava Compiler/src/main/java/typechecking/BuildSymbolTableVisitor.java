@@ -1,10 +1,10 @@
 package typechecking;
 
-import utils.symboltable.SymbolTable;
+import utils.symboltable.*;
 import utils.symboltable.entries.*;
-import utils.symboltable.tables.ClassTable;
+import utils.symboltable.tables.*;
 import utils.syntaxtree.*;
-import utils.visitor.DepthFirstVisitor;
+import utils.visitor.*;
 
 import java.util.List;
 

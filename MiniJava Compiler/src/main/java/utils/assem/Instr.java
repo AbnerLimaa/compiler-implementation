@@ -27,7 +27,7 @@ public abstract class Instr {
         if (def() != null)
             for (int i = 0; i< def().totalSize(); i++)
                 if (def().getValue(i) == olddef) def().setValue(newdef, i);
-    };
+    }
 
     public String format(TempMap m) {
         TempList dst = def();
